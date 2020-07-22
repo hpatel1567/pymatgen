@@ -2174,11 +2174,11 @@ def generate_entries_list(db, db_collection, valid_elements=['H', 'C', 'O', 'Li'
                     entry_count = entry_count + 1
 
         print("total entries", len(molecules_MolEntry))
+    else:
+        print("only molecules collection feature avaliable rightnow")
+        molecules_MolEntry = []
 
-    elif db_collection == "tasks":
-        
-
-        return molecules_MolEntry
+    return molecules_MolEntry
 
 
 class ReactionNetwork(MSONable):
@@ -3230,7 +3230,7 @@ class ReactionNetwork(MSONable):
         else:
             return mols_to_keep, pruned_entries_list
 
-    def identify_concerted_rxns_intermediate_loop(self, RN_pr_solved, mols_to_keep, single_elem_interm_ignore = ["C1", "H1", "O1", "Li1"]):
+    def identify_concerted_rxns_via_intermediates(self, RN_pr_solved, mols_to_keep, single_elem_interm_ignore = ["C1", "H1", "O1", "Li1"]):
 
         mols_to_keep.append(None)
         count_total = 0
@@ -3364,12 +3364,9 @@ class ReactionNetwork(MSONable):
 
 
     def add_concerted_rxns(self, full_network_pr_solved, pruned_network_build, reactions):
-        # BOTH BACK AND FORTH REACTION REP
         c1 = 0
         c2 = 0
         c3 = 0
-        name = []
-        # print(pruned_network_build.graph.nodes)
         for reaction in reactions:
             if len(reaction[0]) == 1 and len(reaction[1]) == 1:
                 # print(reaction)
