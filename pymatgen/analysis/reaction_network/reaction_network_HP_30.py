@@ -2361,7 +2361,7 @@ class ReactionNetwork(MSONable):
 
         if free_energy <= 0:
             d = np.array([[free_energy]], dtype=np.float128)
-            r = np.exp(d)
+            r = np.exp(30*d)
         else:
             d = np.array([[free_energy]], dtype=np.float128)
             r = np.exp(38.94*d)

@@ -106,13 +106,9 @@ class MoleculeEntry(MSONable):
     @property
     def free_energy(self, temp=298.0):
         if self.enthalpy != None and self.entropy != None:
-            if self.formula == "H1" and self.charge == 1:
-                return -5.788434447279948
-            else:
-                return self.energy * 27.21139 + 0.0433641 * self.enthalpy - temp * self.entropy * 0.0000433641
+            return self.energy*27.21139+0.0433641*self.enthalpy-temp*self.entropy*0.0000433641
         else:
             return None
-
 
     @property
     def formula(self):
@@ -125,8 +121,6 @@ class MoleculeEntry(MSONable):
     @property
     def Nbonds(self):
         return len(self.edges)
-
-
 
     def __repr__(self):
         output = ["MoleculeEntry {} - {} - E{} - C{}".format(self.entry_id,
@@ -145,4 +139,3 @@ class MoleculeEntry(MSONable):
 
     def __str__(self):
         return self.__repr__()
-
