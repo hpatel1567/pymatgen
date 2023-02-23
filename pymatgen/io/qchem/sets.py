@@ -1,9 +1,6 @@
 # Copyright (c) Pymatgen Development Team.
 # Distributed under the terms of the MIT License.
 
-
-
-##hh
 """
 Input sets for Qchem
 """
@@ -150,6 +147,7 @@ class QChemDictSet(QCInput):
         isosvp_dielectric: float | None = None,
         smd_solvent: str | None = None,
         cmirs_solvent: Literal["water", "acetonitrile", "dimethyl sulfoxide", "cyclohexane", "benzene"] | None = None,
+        cosmo_dielectric: float | None = None,
         custom_smd: str | None = None,
         opt_variables: dict[str, list] | None = None,
         scan_variables: dict[str, list] | None = None,
@@ -368,6 +366,7 @@ class QChemDictSet(QCInput):
         self.isosvp_dielectric = isosvp_dielectric
         self.smd_solvent = smd_solvent
         self.cmirs_solvent = cmirs_solvent
+        self.cosmo_dielectric = cosmo_dielectric
         self.custom_smd = custom_smd
         self.opt_variables = opt_variables
         self.scan_variables = scan_variables
@@ -436,11 +435,11 @@ class QChemDictSet(QCInput):
             myrem["geom_opt_max_cycles"] = str(self.geom_opt_max_cycles)
 
         solvent_def = 0
-        for a in [self.pcm_dielectric, self.isosvp_dielectric, self.smd_solvent, self.cmirs_solvent]:
+        for a in [self.pcm_dielectric, self.isosvp_dielectric, self.smd_solvent, self.cmirs_solvent, self.cosmo_dielectric]:
             if a is not None:
                 solvent_def += 1
         if solvent_def > 1:
-            raise ValueError("Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation.")
+            raise ValueError("Only one of PCM, ISOSVP, SMD, and CMIRS may be used for solvation.")
 
         if self.pcm_dielectric is not None:
             mypcm = pcm_defaults
@@ -490,6 +489,10 @@ class QChemDictSet(QCInput):
             mypcm_nonels["delta"] = "7"  # as recommended by Q-Chem. See manual.
             mypcm_nonels["gaulag_n"] = "40"  # as recommended by Q-Chem. See manual.
 
+        if self.cosmo_dielectric is not None:
+            myrem["solvent_method"] = "cosmo"
+            mysolvent["dielectric"] = str(self.cosmo_dielectric)
+        
         if self.plot_cubes:
             myplots = plots_defaults
             myrem["plots"] = "true"
@@ -666,6 +669,7 @@ class SinglePointSet(QChemDictSet):
         isosvp_dielectric: float | None = None,
         smd_solvent: str | None = None,
         cmirs_solvent: Literal["water", "acetonitrile", "dimethyl sulfoxide", "cyclohexane", "benzene"] | None = None,
+        cosmo_dielectric: float | None = None,
         custom_smd: str | None = None,
         max_scf_cycles: int = 100,
         plot_cubes: bool = False,
@@ -862,6 +866,7 @@ class SinglePointSet(QChemDictSet):
             isosvp_dielectric=isosvp_dielectric,
             smd_solvent=smd_solvent,
             cmirs_solvent=cmirs_solvent,
+            cosmo_dielectric=cosmo_dielectric,
             custom_smd=custom_smd,
             basis_set=self.basis_set,
             scf_algorithm=self.scf_algorithm,
@@ -893,6 +898,7 @@ class OptSet(QChemDictSet):
         isosvp_dielectric: float | None = None,
         smd_solvent: str | None = None,
         cmirs_solvent: Literal["water", "acetonitrile", "dimethyl sulfoxide", "cyclohexane", "benzene"] | None = None,
+        cosmo_dielectric: float | None = None,
         custom_smd: str | None = None,
         max_scf_cycles: int = 100,
         plot_cubes: bool = False,
@@ -1074,6 +1080,7 @@ class OptSet(QChemDictSet):
             isosvp_dielectric=isosvp_dielectric,
             smd_solvent=smd_solvent,
             cmirs_solvent=cmirs_solvent,
+            cosmo_dielectric=cosmo_dielectric,
             custom_smd=custom_smd,
             opt_variables=opt_variables,
             basis_set=self.basis_set,
@@ -1105,6 +1112,7 @@ class TransitionStateSet(QChemDictSet):
         isosvp_dielectric: float | None = None,
         smd_solvent: str | None = None,
         cmirs_solvent: Literal["water", "acetonitrile", "dimethyl sulfoxide", "cyclohexane", "benzene"] | None = None,
+        cosmo_dielectric: float | None = None,
         custom_smd: str | None = None,
         max_scf_cycles: int = 100,
         plot_cubes: bool = False,
@@ -1241,6 +1249,7 @@ class ForceSet(QChemDictSet):
         isosvp_dielectric: float | None = None,
         smd_solvent: str | None = None,
         cmirs_solvent: Literal["water", "acetonitrile", "dimethyl sulfoxide", "cyclohexane", "benzene"] | None = None,
+        cosmo_dielectric: float | None = None,
         custom_smd: str | None = None,
         max_scf_cycles: int = 100,
         plot_cubes: bool = False,
@@ -1404,6 +1413,7 @@ class ForceSet(QChemDictSet):
             isosvp_dielectric=isosvp_dielectric,
             smd_solvent=smd_solvent,
             cmirs_solvent=cmirs_solvent,
+            cosmo_dielectric=cosmo_dielectric,
             custom_smd=custom_smd,
             basis_set=self.basis_set,
             scf_algorithm=self.scf_algorithm,
@@ -1433,6 +1443,7 @@ class FreqSet(QChemDictSet):
         isosvp_dielectric: float | None = None,
         smd_solvent: str | None = None,
         cmirs_solvent: Literal["water", "acetonitrile", "dimethyl sulfoxide", "cyclohexane", "benzene"] | None = None,
+        cosmo_dielectric: float | None = None,
         custom_smd: str | None = None,
         max_scf_cycles: int = 100,
         plot_cubes: bool = False,
@@ -1596,6 +1607,7 @@ class FreqSet(QChemDictSet):
             isosvp_dielectric=isosvp_dielectric,
             smd_solvent=smd_solvent,
             cmirs_solvent=cmirs_solvent,
+            cosmo_dielectric=cosmo_dielectric,
             custom_smd=custom_smd,
             basis_set=self.basis_set,
             scf_algorithm=self.scf_algorithm,
@@ -1631,6 +1643,7 @@ class PESScanSet(QChemDictSet):
         isosvp_dielectric: float | None = None,
         smd_solvent: str | None = None,
         cmirs_solvent: Literal["water", "acetonitrile", "dimethyl sulfoxide", "cyclohexane", "benzene"] | None = None,
+        cosmo_dielectric: float | None = None,
         custom_smd: str | None = None,
         max_scf_cycles: int = 100,
         plot_cubes: bool = False,
@@ -1743,6 +1756,7 @@ class PESScanSet(QChemDictSet):
             isosvp_dielectric=isosvp_dielectric,
             smd_solvent=smd_solvent,
             cmirs_solvent=cmirs_solvent,
+            cosmo_dielectric=cosmo_dielectric,
             custom_smd=custom_smd,
             opt_variables=opt_variables,
             scan_variables=scan_variables,

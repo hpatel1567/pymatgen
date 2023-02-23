@@ -240,6 +240,8 @@ class QCOutput(MSONable):
             []
         ]:
             self.data["solvent_method"] = "ISOSVP"
+        if read_pattern(self.text, {"key": r"solvent_method\s*=?\s*cosmo"}, terminate_on_match=True).get("key") == [[]]:
+            self.data["solvent_method"] = "COSMO"
 
         # if solvent_method is not None, populate solvent_data with None values for all possible keys
         # ISOSVP and CMIRS data are nested under respective keys
@@ -269,6 +271,7 @@ class QCOutput(MSONable):
             "min_neg_field_e",
             "max_pos_field_e",
         ]
+        cosmo_keys = ["COSMO_dielectric"]
 
         if self.data["solvent_method"] is not None:
             self.data["solvent_data"] = {}
@@ -280,6 +283,8 @@ class QCOutput(MSONable):
             self.data["solvent_data"]["cmirs"] = {}
             for key in cmirs_keys:
                 self.data["solvent_data"]["cmirs"][key] = None
+            for key in cosmo_keys:
+                self.data["solvent_data"]["cosmo"][key] = None
 
         # Parse information specific to a solvent model
         if self.data["solvent_method"] == "PCM":
@@ -307,6 +312,12 @@ class QCOutput(MSONable):
                             self.data["warnings"]["questionable_SMD_parsing"] = True
             self.data["solvent_data"]["SMD_solvent"] = temp_solvent[0][0]
             self._read_smd_information()
+        elif self.data["solvent_method"] == "COSMO":
+            temp_dielectric = read_pattern(
+                self.text, {"key": r"dielectric\s*([\d\-\.]+)"}, terminate_on_match=True
+            ).get("key")
+            self.data["solvent_data"]["COSMO_dielectric"] = float(temp_dielectric[0][0])
+            #self._read_cosmo_information()
         elif self.data["solvent_method"] == "ISOSVP":
             self.data["solvent_data"]["cmirs"]["CMIRS_enabled"] = False
             self._read_isosvp_information()

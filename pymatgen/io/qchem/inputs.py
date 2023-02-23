@@ -419,7 +419,7 @@ class QCInput(InputFile):
         # TODO: add ghost atoms
         mol_list = []
         mol_list.append("$molecule")
-
+        
         # Edge case; can't express molecule as fragments with only one fragment
         if isinstance(molecule, list) and len(molecule) == 1:
             molecule = molecule[0]
