@@ -275,6 +275,7 @@ class QCOutput(MSONable):
 
         if self.data["solvent_method"] is not None:
             self.data["solvent_data"] = {}
+            self.data["solvent_data"]["cosmo"] = {}
             for key in pcm_keys + smd_keys:
                 self.data["solvent_data"][key] = None
             self.data["solvent_data"]["isosvp"] = {}
